@@ -1,180 +1,103 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BAD BOYS FC</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: radial-gradient(circle, #0f0f0f, #000);
-    color: white;
 }
-
-/* HEADER */
-header {
-    text-align: center;
-    padding: 25px;
-    font-size: 28px;
-    font-weight: bold;
-    background: linear-gradient(90deg, orange, black);
-    letter-spacing: 2px;
-}
-
-/* ARAMA */
-.search {
-    text-align: center;
-    margin: 20px;
-}
-
-.search input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-}
-
-/* LİDER */
-.leader {
-    text-align: center;
-    margin: 20px;
-    padding: 20px;
-    background: rgba(255,165,0,0.1);
-    border: 1px solid orange;
-    border-radius: 15px;
-}
-
-/* GRID */
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-/* KART */
-.card {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 15px;
-    transition: 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.card:hover {
-    transform: scale(1.07);
-    box-shadow: 0 0 20px orange;
-}
-
-/* İLK 3 ÖZEL */
-.top1 { border: 2px solid gold; }
-.top2 { border: 2px solid silver; }
-.top3 { border: 2px solid #cd7f32; }
 
 .name {
-    font-size: 20px;
-    font-weight: bold;
+    font-size:20px;
+    font-weight:bold;
 }
-
-.position {
-    margin: 5px 0;
-    font-weight: bold;
-}
-
-.defans { color: #00bfff; }
-.forvet { color: #ff4d4d; }
-.orta { color: #ffd700; }
-.kaleci { color: #7fff00; }
 
 .stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    margin-top:10px;
 }
 
-.stat {
-    text-align: center;
-}
+.top1 { border:2px solid gold; }
+.top2 { border:2px solid silver; }
+.top3 { border:2px solid #cd7f32; }
 
-.mvp {
-    text-align: center;
-    margin-top: 10px;
-    color: gold;
-}
 </style>
 </head>
-
 <body>
 
 <header>⚽ BAD BOYS FC</header>
 
-<div class="leader" id="leader"></div>
+<div class="logo">
+<img src="https://cdn-icons-png.flaticon.com/512/53/53283.png">
+</div>
 
-<div class="search">
-    <input type="text" id="search" placeholder="Oyuncu ara...">
+<div class="admin">
+<h3>Oyuncu Ekle</h3>
+<input id="name" placeholder="İsim">
+<input id="pos" placeholder="Pozisyon">
+<button onclick="addPlayer()">Ekle</button>
 </div>
 
 <div class="container" id="players"></div>
 
 <script>
-const players = [
-    {name: "Yakup Sunay", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Murat Çaylı", pos: "Forvet", class: "forvet", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Erol Gönül", pos: "Orta Saha", class: "orta", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Eren Yılmaz", pos: "Forvet", class: "forvet", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Mehmet Uzun", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Süleyman Tunçelik", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
-    {name: "Hüseyincan Yüksekdağ", pos: "Kaleci", class: "kaleci", gol:0, asist:0, mac:0, mvp:0}
-];
+let players = JSON.parse(localStorage.getItem("players")) || [];
 
-const container = document.getElementById("players");
-const leaderDiv = document.getElementById("leader");
-const searchInput = document.getElementById("search");
+function save(){
+    localStorage.setItem("players", JSON.stringify(players));
+}
 
-function render(list) {
+function addPlayer(){
+    const name = document.getElementById("name").value;
+    const pos = document.getElementById("pos").value;
+
+    if(!name || !pos) return alert("Boş bırakma");
+
+    players.push({name,pos,gol:0,asist:0,mac:0,mvp:0});
+    save();
+    render();
+}
+
+function deletePlayer(i){
+    players.splice(i,1);
+    save();
+    render();
+}
+
+function addStat(i,type){
+    players[i][type]++;
+    players[i].mvp = players[i].gol*2 + players[i].asist;
+    save();
+    render();
+}
+
+function render(){
+    const container = document.getElementById("players");
     container.innerHTML = "";
 
-    list.sort((a,b) => b.mvp - a.mvp);
+    players.sort((a,b)=>b.mvp-a.mvp);
 
-    // LİDER
-    const best = list[0];
-    leaderDiv.innerHTML = 🏆 En İyi Oyuncu: <b>${best.name}</b> (MVP: ${best.mvp});
-
-    list.forEach((p, index) => {
-        let rankClass = "";
-        if(index === 0) rankClass = "top1";
-        if(index === 1) rankClass = "top2";
-        if(index === 2) rankClass = "top3";
+    players.forEach((p,i)=>{
+        let rank="";
+        if(i===0) rank="top1";
+        if(i===1) rank="top2";
+        if(i===2) rank="top3";
 
         container.innerHTML += `
-        <div class="card ${rankClass}">
+        <div class="card ${rank}">
             <div class="name">${p.name}</div>
-            <div class="position ${p.class}">${p.pos}</div>
+            <div>${p.pos}</div>
 
             <div class="stats">
-                <div class="stat"><b>${p.gol}</b><br>Gol</div>
-                <div class="stat"><b>${p.asist}</b><br>Asist</div>
-                <div class="stat"><b>${p.mac}</b><br>Maç</div>
+            ⚽ ${p.gol} | 🎯 ${p.asist} | 🕹 ${p.mac}
             </div>
 
-            <div class="mvp">⭐ MVP: ${p.mvp}</div>
+            ⭐ MVP: ${p.mvp}<br><br>
+
+            <button onclick="addStat(${i},'gol')">Gol +</button>
+            <button onclick="addStat(${i},'asist')">Asist +</button>
+            <button onclick="addStat(${i},'mac')">Maç +</button><br>
+
+            <button onclick="deletePlayer(${i})">Sil</button>
         </div>
         `;
     });
 }
 
-// ARAMA
-searchInput.addEventListener("input", () => {
-    const value = searchInput.value.toLowerCase();
-    const filtered = players.filter(p => p.name.toLowerCase().includes(value));
-    render(filtered);
-});
-
-render(players);
+render();
 </script>
 
 </body>
