@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAD BOYS FC</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle, #0f0f0f, #000);
+    color: white;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(90deg, orange, black);
+    letter-spacing: 2px;
+}
+
+/* ARAMA */
+.search {
+    text-align: center;
+    margin: 20px;
+}
+
+.search input {
+    padding: 10px;
+    width: 250px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+/* LİDER */
+.leader {
+    text-align: center;
+    margin: 20px;
+    padding: 20px;
+    background: rgba(255,165,0,0.1);
+    border: 1px solid orange;
+    border-radius: 15px;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* KART */
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 15px;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px orange;
+}
+
+/* İLK 3 ÖZEL */
+.top1 { border: 2px solid gold; }
+.top2 { border: 2px solid silver; }
+.top3 { border: 2px solid #cd7f32; }
+
+.name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.position {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.defans { color: #00bfff; }
+.forvet { color: #ff4d4d; }
+.orta { color: #ffd700; }
+.kaleci { color: #7fff00; }
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.mvp {
+    text-align: center;
+    margin-top: 10px;
+    color: gold;
+}
+</style>
+</head>
+
+<body>
+
+<header>⚽ BAD BOYS FC</header>
+
+<div class="leader" id="leader"></div>
+
+<div class="search">
+    <input type="text" id="search" placeholder="Oyuncu ara...">
+</div>
+
+<div class="container" id="players"></div>
+
+<script>
+const players = [
+    {name: "Yakup Sunay", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Murat Çaylı", pos: "Forvet", class: "forvet", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Erol Gönül", pos: "Orta Saha", class: "orta", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Eren Yılmaz", pos: "Forvet", class: "forvet", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Mehmet Uzun", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Süleyman Tunçelik", pos: "Defans", class: "defans", gol:0, asist:0, mac:0, mvp:0},
+    {name: "Hüseyincan Yüksekdağ", pos: "Kaleci", class: "kaleci", gol:0, asist:0, mac:0, mvp:0}
+];
+
+const container = document.getElementById("players");
+const leaderDiv = document.getElementById("leader");
+const searchInput = document.getElementById("search");
+
+function render(list) {
+    container.innerHTML = "";
+
+    list.sort((a,b) => b.mvp - a.mvp);
+
+    // LİDER
+    const best = list[0];
+    leaderDiv.innerHTML = 🏆 En İyi Oyuncu: <b>${best.name}</b> (MVP: ${best.mvp});
+
+    list.forEach((p, index) => {
+        let rankClass = "";
+        if(index === 0) rankClass = "top1";
+        if(index === 1) rankClass = "top2";
+        if(index === 2) rankClass = "top3";
+
+        container.innerHTML += `
+        <div class="card ${rankClass}">
+            <div class="name">${p.name}</div>
+            <div class="position ${p.class}">${p.pos}</div>
+
+            <div class="stats">
+                <div class="stat"><b>${p.gol}</b><br>Gol</div>
+                <div class="stat"><b>${p.asist}</b><br>Asist</div>
+                <div class="stat"><b>${p.mac}</b><br>Maç</div>
+            </div>
+
+            <div class="mvp">⭐ MVP: ${p.mvp}</div>
+        </div>
+        `;
+    });
+}
+
+// ARAMA
+searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+    const filtered = players.filter(p => p.name.toLowerCase().includes(value));
+    render(filtered);
+});
+
+render(players);
+</script>
+
+</body>
+</html>
